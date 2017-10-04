@@ -1,0 +1,107 @@
+<html>
+<link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<script src="semantic/dist/semantic.min.js"></script>
+
+<head></head>
+
+<body>
+    <div id="app" class="ui container">
+        <div class="ui segments">
+            <div class="ui secondary pointing menu">
+                <a href="index.html" class="active item">
+                              Home
+                            </a>
+                <a href="menu.html" class="item">
+                              Menu
+                            </a>
+                <a class="item">
+                              Friends
+                            </a>
+                <div class="right menu">
+                    <a class="ui item">
+                                Logout
+                              </a>
+                </div>
+            </div>
+            <h2>In this page you can fill up your menu!</h2>
+            <div class="ui segment">
+                <form class="ui form">
+                    <h4 class="ui dividing header">Menu Information</h4>
+                    <div class="field five wide">
+                        <label>Type of the product:</label>
+                        <select class="ui fluid dropdown" v-model="productTypeId">
+                              <option value="">Choose one from the list</option>
+                              <option v-for="product in productTypes" v-bind:value="product.id">{{product.name}}</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Product Details</label>
+                        <div class="fields">
+                            <div class="five wide field">
+                                <input type="text" name="" v-model="productName" placeholder="Product Name">
+                            </div>
+                            <div class="five wide field">
+                                <input type="text" name="" v-model="productPrice" placeholder="Product Price">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Product Description</label>
+                        <textarea v-model="productDescription"></textarea>
+                    </div>
+                    <div class="ui button" tabindex="0" v-on:click="postProduct()">Submit Product</div>
+                </form>
+            </div>
+            <!-- <div>
+                <ul>
+                    <li v-for="product in productTypes">{{product.name}}</li>
+                </ul>
+            </div> -->
+            <!-- <input type="text" v-model="productType" v-on:keyup.enter="postProductTypes()" name=""> -->
+            <div>{{productTypeId}} {{productName}} {{productPrice}}</div>
+        </div>
+    </div>
+</body>
+<script src="js/vue.min.js"></script>
+<script src="js/axios.min.js"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            productTypes: [],
+            productTypeId: '',
+            productName: '',
+            productPrice: '',
+            productDescription: ''
+        },
+        methods: {
+            getProductTypes: function() {
+                _this = this;
+                axios.get("http://localhost:12220/api/productType")
+                    .then(function(response) {
+                        _this.productTypes = response.data.productTypes;
+                        console.log('productTypes');
+                    });
+            },
+            postProduct: function() {
+                _this = this;
+                axios.post("http://localhost:12220/api/product", {
+                        // name: this.productType
+                        productTypeId: this.productTypeId,
+                        productName: this.productName,
+                        productPrice: this.productPrice,
+                        productDescription: this.productDescription
+                    }),
+                    // console.log(productTypeId);
+                    window.alert(_this.productTypeId);
+            }
+
+        },
+        mounted: function() {
+            this.getProductTypes();
+        }
+    });
+</script>
+
+</html>
