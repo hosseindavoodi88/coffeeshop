@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="semantic/dist/semantic.min.js"></script>
+</head>
+
+<body div id="app" class="ui container">
+    <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+    <div class="ui segments">
+        <div class="ui secondary pointing menu">
+            <a href="index.html" class="item">
+                          Home
+                        </a>
+            <a href="menu.html" class="active item">
+                          Menu
+                        </a>
+            <a class="item">
+                          Friends
+                        </a>
+            <div class="right menu">
+                <a class="ui item">
+                            Logout
+                          </a>
+            </div>
+        </div>
+        <div id="menu" class="ui">
+            <table class="ui fixed single line table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Description</th>
+                        <th class="center aligned">Add to order list</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in menu">
+                        <td v-model="name">{{item.name}}</td>
+                        <td v-model="price">{{item.price}}</td>
+                        <td>{{item.description}}</td>
+                        <td class="ui center aligned" v-on:click="insert(item)">
+                            <button class="ui green icon button ">
+                                <i class="add squre icon "></i>
+                            </button>
+                            <!-- <button class="ui red icon button " v-on:click="subtract() ">
+                                <i class="minus squre icon "></i>
+                            </button>
+                            <a class="ui label ">{{num}}                                      
+                            </a> -->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="ui segment ">
+                <h3>Your orders:</h3>
+                <table class="ui fixed inverted table">
+                    <thead>
+                        <tr>
+                            <th>Order name</th>
+                            <th>Order price</th>
+                            <th class="ui center aligned">Remove order</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="order in orderList">
+                            <td>{{order.orderName}}</td>
+                            <td>{{order.orderPrice}}</td>
+                            <td class="ui center aligned">
+                                <button class="ui red icon button " v-on:click="remove(order) ">
+                                    <i class="minus squre icon "></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="active">
+                            <td>Total price: </td>
+                            <td>{{ totalPrice }}</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script src="js/vue.min.js "></script>
+<script src="js/axios.min.js "></script>
+<script>
+    var app = new Vue({
+        el: '#menu',
+        data: {
+            menu: [],
+            name: '',
+            price: '',
+            oP: '',
+            orderList: [],
+            totalPrice: 0,
+            num: 0
+        },
+        methods: {
+            getMenu: function() {
+                _this = this;
+                axios.get("http://localhost:12220/api/menu ")
+                    .then(function(response) {
+                        _this.menu = response.data.menu;
+                        // console.log('productTypes');
+                    });
+            },
+            insert: function(item) {
+                this.name = item.name;
+                this.price = item.price;
+                this.orderList.push({
+                    orderName: this.name,
+                    orderPrice: this.price
+                });
+                this.totalPrice += this.price;
+            },
+            remove: function(order) {
+                var index = this.orderList.indexOf(order);
+                this.orderList.splice(index, 1);
+                this.totalPrice -= order.orderPrice;
+            }
+        },
+        mounted: function() {
+            this.getMenu();
+        }
+    })
+</script>
+
+</html>
